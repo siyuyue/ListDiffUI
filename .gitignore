@@ -88,3 +88,16 @@ fastlane/test_output
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/
+
+# bazel output
+bazel-bazel
+bazel-bin
+bazel-out
+bazel-ListDiffUI
+bazel-testlogs
+
+# XCode project
+*.xcodeproj
+
+# Mac .DS_Store
+.DS_Store
