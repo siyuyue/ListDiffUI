@@ -74,13 +74,15 @@ open class ListCellController<
   open func didAppear(cell: ListCellType) {
   }
 
-  open func willDisappear(cell: ListCellType) {
+  // cell is optional in this case since the cell might already be reused.
+  open func willDisappear(cell: ListCellType?) {
   }
 
   open func didFullyAppear(cell: ListCellType) {
   }
 
-  open func willPartiallyDisappear(cell: ListCellType) {
+  // cell is optional in this case since the cell might already be reused.
+  open func willPartiallyDisappear(cell: ListCellType?) {
   }
 
   open func didMount(onCell cell: ListCellType) {
@@ -100,7 +102,7 @@ open class ListCellController<
   }
 
   override func willDisappear() {
-    willDisappear(cell: cell as! ListCellType)
+    willDisappear(cell: cell as? ListCellType)
   }
 
   override func didFullyAppear() {
@@ -108,7 +110,7 @@ open class ListCellController<
   }
 
   override func willPartiallyDisappear() {
-    willPartiallyDisappear(cell: cell as! ListCellType)
+    willPartiallyDisappear(cell: cell as? ListCellType)
   }
 
   override func viewModelUntyped() -> ListViewModel {

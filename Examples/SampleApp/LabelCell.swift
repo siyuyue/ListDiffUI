@@ -62,12 +62,14 @@ final class LabelViewCellController: ListCellController<
   }
 
   override func configureCell(cell: LabelCell) {
+    context.object(type: HelloWorldLogger.self)?.log(message: "\(viewModel.identifier) configureCell")
     cell.label.text = "\(viewModel.item) x \(viewModel.count)"
     cell.expandButton.setTitle(viewState.expanded ? "Collapse" : "Expand", for: .normal)
     cell.minusButton.isHidden = viewModel.count == 0
   }
 
   override func cellDidLayoutSubviews(cell: LabelCell) {
+    context.object(type: HelloWorldLogger.self)?.log(message: "\(viewModel.identifier) didLayoutSubviews")
     cell.label.frame = CGRect(x: 16, y: cell.contentView.bounds.midY - 10, width: 100, height: 20)
     cell.expandButton.frame = CGRect(
       x: cell.contentView.bounds.maxX - 96, y: cell.label.frame.minY, width: 80, height: 20)
@@ -92,7 +94,7 @@ final class LabelViewCellController: ListCellController<
     context.object(type: HelloWorldLogger.self)?.log(message: "\(viewModel.identifier) didAppear")
   }
 
-  override func willDisappear(cell: LabelCell) {
+  override func willDisappear(cell: LabelCell?) {
     context.object(type: HelloWorldLogger.self)?.log(
       message: "\(viewModel.identifier) willDisappear")
   }
@@ -102,7 +104,7 @@ final class LabelViewCellController: ListCellController<
       message: "\(viewModel.identifier) didFullyAppear")
   }
 
-  override func willPartiallyDisappear(cell: LabelCell) {
+  override func willPartiallyDisappear(cell: LabelCell?) {
     context.object(type: HelloWorldLogger.self)?.log(
       message: "\(viewModel.identifier) willPartiallyDisappear")
   }
