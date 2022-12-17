@@ -88,21 +88,21 @@ final class LabelViewCellController: ListCellController<
     cell.plusButton.addTarget(self, action: #selector(didTapPlus), for: .touchUpInside)
   }
 
-  override func didAppear() {
+  override func didAppear(cell: LabelCell) {
     context.object(type: HelloWorldLogger.self)?.log(message: "\(viewModel.identifier) didAppear")
   }
 
-  override func willDisappear() {
+  override func willDisappear(cell: LabelCell) {
     context.object(type: HelloWorldLogger.self)?.log(
       message: "\(viewModel.identifier) willDisappear")
   }
 
-  override func didFullyAppear() {
+  override func didFullyAppear(cell: LabelCell) {
     context.object(type: HelloWorldLogger.self)?.log(
       message: "\(viewModel.identifier) didFullyAppear")
   }
 
-  override func willPartiallyDisappear() {
+  override func willPartiallyDisappear(cell: LabelCell) {
     context.object(type: HelloWorldLogger.self)?.log(
       message: "\(viewModel.identifier) willPartiallyDisappear")
   }

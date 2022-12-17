@@ -136,6 +136,7 @@ public final class ListDiffDataSource: NSObject {
       self.collectionView.performBatchUpdates {
         self.collectionView.collectionViewLayout.invalidateLayout(with: layoutInvalidation)
       }
+      self.updateCellAppearance()
     }
     cellControllers[viewDataModel.identifier] = controller
     return controller

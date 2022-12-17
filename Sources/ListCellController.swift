@@ -71,16 +71,16 @@ open class ListCellController<
   open func configureCell(cell: ListCellType) {
   }
 
-  open override func didAppear() {
+  open func didAppear(cell: ListCellType) {
   }
 
-  open override func willDisappear() {
+  open func willDisappear(cell: ListCellType) {
   }
 
-  open override func didFullyAppear() {
+  open func didFullyAppear(cell: ListCellType) {
   }
 
-  open override func willPartiallyDisappear() {
+  open func willPartiallyDisappear(cell: ListCellType) {
   }
 
   open func didMount(onCell cell: ListCellType) {
@@ -93,6 +93,22 @@ open class ListCellController<
   }
 
   open func cellDidLayoutSubviews(cell: ListCellType) {
+  }
+
+  override func didAppear() {
+    didAppear(cell: cell as! ListCellType)
+  }
+
+  override func willDisappear() {
+    willDisappear(cell: cell as! ListCellType)
+  }
+
+  override func didFullyAppear() {
+    didFullyAppear(cell: cell as! ListCellType)
+  }
+
+  override func willPartiallyDisappear() {
+    willPartiallyDisappear(cell: cell as! ListCellType)
   }
 
   override func viewModelUntyped() -> ListViewModel {
@@ -200,19 +216,19 @@ open class AnyListCellController {
     fatalError()
   }
 
-  open func didAppear() {
+  func didAppear() {
     fatalError()
   }
 
-  open func willDisappear() {
+  func willDisappear() {
     fatalError()
   }
 
-  open func didFullyAppear() {
+  func didFullyAppear() {
     fatalError()
   }
 
-  open func willPartiallyDisappear() {
+  func willPartiallyDisappear() {
     fatalError()
   }
 
