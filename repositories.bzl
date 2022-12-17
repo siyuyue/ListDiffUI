@@ -1,6 +1,6 @@
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "new_git_repository")
 
-def sectionui_dependencies(is_local = False):
+def listdiffui_dependencies(is_local = False):
     new_git_repository(
         name = "ListDiff",
         remote = "https://github.com/lxcid/ListDiff.git",

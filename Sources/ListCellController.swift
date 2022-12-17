@@ -1,0 +1,242 @@
+import UIKit
+
+public protocol ListCellControllerWithDelegate {
+  associatedtype DelegateType
+  var delegate: DelegateType? { get }
+}
+
+extension ListCellControllerWithDelegate where Self: AnyListCellController {
+
+  public var delegate: DelegateType? {
+    anyDelegate.object as? DelegateType
+  }
+}
+
+public final class WeakAnyObject {
+
+  public static var none = WeakAnyObject(object: nil)
+
+  weak var object: AnyObject?
+
+  public init(object: AnyObject?) {
+    self.object = object
+  }
+}
+
+public protocol ListCellControllerViewModelProviding {
+
+  associatedtype ListViewModelType: ListViewModel
+}
+
+open class ListCellController<
+  ListViewModelType: ListViewModel & Equatable,
+  ListViewStateType: ListViewState,
+  ListCellType: ListCell
+>: AnyListCellController {
+
+  public private(set) var viewModel: ListViewModelType
+
+  public private(set) var viewState: ListViewStateType
+
+  override class var cellType: ListCell.Type {
+    ListCellType.self
+  }
+
+  private var updatingViewModel = false
+  private var invalidatingLayout = false
+  private var didUpdateCellWhenInvalidatingLayout = false
+
+  required public init(
+    viewModel: ListViewModel,
+    delegate: WeakAnyObject,
+    context: ListDiffContext
+  ) {
+    let viewModel = viewModel as! ListViewModelType
+    self.viewModel = viewModel
+    self.viewState = ListViewStateType.init()
+    super.init(viewModel: viewModel, delegate: delegate, context: context)
+  }
+
+  public func updateState(_ viewState: ListViewStateType) {
+    self.viewState = viewState
+    if !updatingViewModel {
+      updateCell(shouldInvalidateLayout: true)
+    }
+  }
+
+  open override func itemSize(containerSize: CGSize) -> CGSize {
+    return .zero
+  }
+
+  open func configureCell(cell: ListCellType) {
+  }
+
+  open override func didAppear() {
+  }
+
+  open override func willDisappear() {
+  }
+
+  open override func didFullyAppear() {
+  }
+
+  open override func willPartiallyDisappear() {
+  }
+
+  open func didMount(onCell cell: ListCellType) {
+  }
+
+  open func willUnmount(onCell cell: ListCellType) {
+  }
+
+  open func didUpdateViewModel(oldViewModel: ListViewModelType) {
+  }
+
+  open func cellDidLayoutSubviews(cell: ListCellType) {
+  }
+
+  override func viewModelUntyped() -> ListViewModel {
+    viewModel
+  }
+
+  override func viewStateUntyped() -> ListViewState {
+    viewState
+  }
+
+  override func didMountInternal(onCell cell: ListCell) {
+    let cell = cell as! ListCellType
+    updateCell(shouldInvalidateLayout: false)
+    didMount(onCell: cell)
+  }
+
+  override func willUnmountInternal(onCell cell: ListCell) {
+    let cell = cell as! ListCellType
+    willUnmount(onCell: cell)
+  }
+
+  override func setViewModelInternal(viewModel: ListViewModel) {
+    let viewModel = viewModel as! ListViewModelType
+    guard viewModel != self.viewModel else {
+      return
+    }
+    let oldViewModel = self.viewModel
+    self.viewModel = viewModel
+    updatingViewModel = true
+    didUpdateViewModel(oldViewModel: oldViewModel)
+    updatingViewModel = false
+    updateCell(shouldInvalidateLayout: true)
+  }
+
+  override func cellDidLayoutSubviews() {
+    if invalidatingLayout {
+      updateCell(shouldInvalidateLayout: false)
+      didUpdateCellWhenInvalidatingLayout = true
+    }
+    guard let cell = cell else {
+      return
+    }
+    cellDidLayoutSubviews(cell: cell as! ListCellType)
+  }
+
+  func updateCell(shouldInvalidateLayout: Bool) {
+    guard let cell = cell else {
+      return
+    }
+    if shouldInvalidateLayout {
+      invalidatingLayout = true
+      didUpdateCellWhenInvalidatingLayout = false
+      layoutInvalidateHandler?(cell)
+      invalidatingLayout = false
+
+      if !didUpdateCellWhenInvalidatingLayout {
+        configureCell(cell: cell as! ListCellType)
+      }
+    } else {
+      configureCell(cell: cell as! ListCellType)
+    }
+  }
+}
+
+extension ListCellController: ListCellControllerViewModelProviding {
+
+  public typealias ListViewModelType = ListViewModelType
+}
+
+open class AnyListCellController {
+
+  class var cellType: ListCell.Type {
+    fatalError("Must be provided by subclass")
+  }
+
+  public let context: ListDiffContext
+
+  weak var cell: ListCell? {
+    willSet {
+      if let cell = cell {
+        willUnmountInternal(onCell: cell)
+      }
+    }
+    didSet {
+      if let cell = cell {
+        didMountInternal(onCell: cell)
+      }
+    }
+  }
+
+  var anyDelegate: WeakAnyObject
+
+  var layoutInvalidateHandler: ((UICollectionViewCell) -> Void)?
+
+  required public init(
+    viewModel: ListViewModel,
+    delegate: WeakAnyObject,
+    context: ListDiffContext
+  ) {
+    self.anyDelegate = delegate
+    self.context = context
+  }
+
+  open func itemSize(containerSize: CGSize) -> CGSize {
+    fatalError()
+  }
+
+  open func didAppear() {
+    fatalError()
+  }
+
+  open func willDisappear() {
+    fatalError()
+  }
+
+  open func didFullyAppear() {
+    fatalError()
+  }
+
+  open func willPartiallyDisappear() {
+    fatalError()
+  }
+
+  func viewModelUntyped() -> ListViewModel {
+    fatalError()
+  }
+
+  func viewStateUntyped() -> ListViewState {
+    fatalError()
+  }
+
+  func didMountInternal(onCell cell: ListCell) {
+    fatalError()
+  }
+
+  func willUnmountInternal(onCell cell: ListCell) {
+    fatalError()
+  }
+
+  func setViewModelInternal(viewModel: ListViewModel) {
+    fatalError()
+  }
+
+  func cellDidLayoutSubviews() {
+    fatalError()
+  }
+}

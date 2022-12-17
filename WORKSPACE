@@ -27,10 +27,6 @@ load(
 
 swift_rules_extra_dependencies()
 
-load("//:repositories.bzl", "sectionui_dependencies")
-
-sectionui_dependencies(is_local = True)
-
 load(
     "@build_bazel_rules_apple//apple:repositories.bzl",
     "apple_rules_dependencies",
@@ -44,3 +40,7 @@ load(
 )
 
 apple_support_dependencies()
+
+load("//:repositories.bzl", "listdiffui_dependencies")
+
+listdiffui_dependencies(is_local = True)

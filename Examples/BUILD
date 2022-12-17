@@ -8,6 +8,7 @@ load(
 
 swift_library(
     name = "SampleAppLib",
+    module_name = "SampleAppLib",
     srcs = glob([
         "SampleApp/**/*.swift",
     ]),
@@ -27,7 +28,7 @@ ios_application(
         "SampleApp/Info.plist",
     ],
     launch_storyboard = "SampleApp/LaunchScreen.storyboard",
-    minimum_os_version = "13.0",
+    minimum_os_version = "14.0",
     deps = [
         ":SampleAppLib",
     ],
