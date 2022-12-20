@@ -43,8 +43,7 @@ open class ListCellController<
   }
 
   private var updatingViewModel = false
-  private var invalidatingLayout = false
-  private var didUpdateCellWhenInvalidatingLayout = false
+  private var didLayoutSubiewsWhenInvalidatingLayout = false
 
   required public init(
     viewModel: ListViewModel,
@@ -146,13 +145,10 @@ open class ListCellController<
   }
 
   override func cellDidLayoutSubviews() {
-    if invalidatingLayout {
-      updateCell(shouldInvalidateLayout: false)
-      didUpdateCellWhenInvalidatingLayout = true
-    }
     guard let cell = cell else {
       return
     }
+    didLayoutSubiewsWhenInvalidatingLayout = true
     cellDidLayoutSubviews(cell: cell as! ListCellType)
   }
 
@@ -160,17 +156,13 @@ open class ListCellController<
     guard let cell = cell else {
       return
     }
+    didLayoutSubiewsWhenInvalidatingLayout = false
     if shouldInvalidateLayout {
-      invalidatingLayout = true
-      didUpdateCellWhenInvalidatingLayout = false
       layoutInvalidateHandler?(cell)
-      invalidatingLayout = false
-
-      if !didUpdateCellWhenInvalidatingLayout {
-        configureCell(cell: cell as! ListCellType)
-      }
-    } else {
-      configureCell(cell: cell as! ListCellType)
+    }
+    configureCell(cell: cell as! ListCellType)
+    if !didLayoutSubiewsWhenInvalidatingLayout {
+      cellDidLayoutSubviews(cell: cell as! ListCellType)
     }
   }
 }
