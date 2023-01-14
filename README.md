@@ -94,30 +94,140 @@ Both identity and equality are provided through ViewModel interface. Identical a
 
 Assuming we are building a ToDo list, to build it with ListDiffUI framework:
 
-1. Start by defining the ViewModel and ViewState for a ToDo list cell:
-```
-struct ToDoItemViewModel: ListViewModel, Equatable {
-  var identifier: String
-  var description: String
-}
+1. Build cell with MVVMC architecture
+   - Start by defining the ViewModel and ViewState for a ToDo list cell:
+    ```
+    struct ToDoItemViewModel: ListViewModel, Equatable {
+      var identifier: String
+      var description: String
+    }
 
-struct ToDoItemViewState: ListViewState {
-  var completed = false
-}
-```
-Note that here completed is on ViewState. If it is part of the data model (e.g., it is persisted across sessions), it should be moved to ViewModel instead.
+    struct ToDoItemViewState: ListViewState {
+      var completed = false
+    }
+    ```
+    Note that here completed is on ViewState. If it is part of the data model (e.g., it is persisted across sessions), it should be moved to ViewModel instead.
 
-2. Implement cell:
-```
-final class ToDoItemCell: ListCell {
+   - Implement cell:
+    ```
+    final class ToDoItemCell: ListCell {
 
-  var descriptionLabel: UILabel
-  var completedButtom: UIButton
-  
-  ...
-}
-```
+      var descriptionLabel: UILabel
+      var completedButton: UIButton
+
+      ...
+    }
+    ```
+    This is usually the same as how one would do it with vanilla UICollectionViewCell.
+
+   - Implement controller logic:
+    ```
+    final class ToDoItemCellController: ListCellController<
+      ToDoItemViewModel,
+      ToDoItemViewState,
+      ToDoItemCell
+    > {
+
+      override func itemSize(containerSize: CGSize) -> CGSize {
+        return CGSize(width: containerSize.width, height: 40)
+      }
+
+      override func configureCell(cell: LabelCell) {
+        cell.descriptionLabel.text = viewModel.description
+        cell.completedButton.isSelected = viewState.completed
+      }
+
+      override func didMount(onCell cell: LabelCell) {
+        cell.completedButton.removeTarget(nil, action: nil, for: .touchUpInside)
+        cell.completedButton.addTarget(self, action: #selector(didTapComplete), for: .touchUpInside)
+      }
+
+      @objc
+      private func didTapComplete() {
+        var state = viewState
+        state.completed = !state.completed
+        updateState(state)
+      }
+    }
+    ```
+    Note that in didMount we are removing all targets on the button first to account for cell reuse. ListDiffUI framework does not dictate how cell communicates with controller to handle user actions. The above example is one way. One may also use delegate pattern, and set controller to be the delegate of the cell in didMount.
+
+2. Create ListDiffDataSource
+    ```
+    let dataSource = ListDiffDataSource(collectionView: collectionView)
+    ```
+    
+3. Set root section on the ListDiffDataSource
+    ```
+    dataSource.setRootSection(
+      ListSection<
+        ToDoItemViewModel, ToDoItemCellController
+      >(items)
+    )
+    ```
+
+And that's it, ListDiffUI framework will take care of building the root section into an array of view models and update UI accordingly.
+
+Refer to [the sample app](https://github.com/siyuyue/ListDiffUI/tree/main/Examples/SampleApp) for a slightly more complicated example, that also showcases a few additional features in the ListDiffUI framework, including:
+- Heterogeneous cells
+- Asynchronous diffing on background thread (This is one flag on ListDiffDataSource)
+- Passing in delegate objects to each controller to handle data mutation
+- Using context objects to pass in dependencies (e.g. a logger instance) to each controller
 
 ## Installation
 
+### Via Swift Package Manager
+https://swiftpackageindex.com/siyuyue/ListDiffUI
+
+### Via bazel
+In WORKSPACE file:
+```
+git_repository(
+    name = "ListDiffUI",
+    remote = "https://github.com/siyuyue/ListDiffUI.git",
+    commit = "2097758b9b0bcedabdc0d7916c4d7613f8f0e2b7",
+    shallow_since = "1671574341 -0800",
+)
+
+load(
+    "@ListDiffUI//:repositories.bzl",
+    "listdiffui_dependencies",
+)
+
+listdiffui_dependencies()
+```
+
+In BUILD file, add `@ListDiffUI//:ListDiffUI` to your library'd deps.
+
+### Copy source code over
+
+It's MIT license.
+
 ## Comparison with similar frameworks
+
+### SwiftUI
+
+If SwiftUI is an option that works for your case, there's no reason to go back to using UICollectionView or ListDiffUI framework.
+
+### UICollectionViewDiffableDataSource
+
+[UICollectionViewDiffableDataSource](https://developer.apple.com/documentation/uikit/views_and_controls/collection_views/updating_collection_views_using_diffable_data_sources) uses snapshots to represent view model and compute diff. It is relatively new and may evolve into a more powerful framework. As of iOS 16, there are two ways to create a snapshot:
+
+1. Loading the snapshot with identifiers using `appendSections` and `appendItems`
+
+Compared to ListDiffUI, this method of creating a snapshot does not provide a descriptive interface. The diffing process does not compute item updates either. User is responsible for computing updates to an existing item.
+
+2. Populate snapshot with lightweight data structures
+
+Compared to ListDiffUI, this method does not track the identity of items.
+
+Neither of the methods provides something like ListDiffUI's Section concept that can easily support heterogeneity.
+
+### IGListKit
+
+ListDiffUI is quite similar to IGListKit, and uses the same ListDiff algorithm for diffing. ListDiffUI additionally offers:
+
+- A descriptive interface to describe the structure of the collection view.
+- Strong types thanks to Swift's powerful syntax.
+
+
