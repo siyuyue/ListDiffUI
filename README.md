@@ -13,37 +13,37 @@ ListDiffUI employs Model-View-ViewModel-Controller architechture for cells in th
 
 - Each type of cell is defined by a ViewModel:
 
-```
-public protocol ListViewModel: Identifiable
-```
+  ```
+  public protocol ListViewModel: Identifiable
+  ```
 
-ViewModels in ListDiffUI framework are expected to be lightweight (immutable) structs that are derived from the underlying data models. They provide interface for identifing cells and equality check.
+  ViewModels in ListDiffUI framework are expected to be lightweight (immutable) structs that are derived from the underlying data models. They provide interface for identifing cells and equality check.
 
-- A ViewState:
+  - A ViewState:
 
-```
-public protocol ListViewState
-```
+  ```
+  public protocol ListViewState
+  ```
 
-ViewStates in ListDiffUI framework are expected to be lightweight structs as well. ViewState should contain fields that affects the appearance of cells, but are not derived from data models. For example, a flag to represent whether a cell is in expanded or collapsed.
+  ViewStates in ListDiffUI framework are expected to be lightweight structs as well. ViewState should contain fields that affects the appearance of cells, but are not derived from data models. For example, a flag to represent whether a cell is in expanded or collapsed.
 
 - A Cell:
-```
-open class ListCell: UICollectionViewCell
-```
+  ```
+  open class ListCell: UICollectionViewCell
+  ```
 
-Cell is a subclass of UICollectionViewCell with several additions and overrides to make it work with CellControllers in the framework.
+  Cell is a subclass of UICollectionViewCell with several additions and overrides to make it work with CellControllers in the framework.
 
 - A CellController:
-```
-open class ListCellController<
-  ListViewModelType: ListViewModel & Equatable,
-  ListViewStateType: ListViewState,
-  ListCellType: ListCell
->: AnyListCellController
-```
+  ```
+  open class ListCellController<
+    ListViewModelType: ListViewModel & Equatable,
+    ListViewStateType: ListViewState,
+    ListCellType: ListCell
+  >: AnyListCellController
+  ```
 
-CellController is expected to be the place for business logic. At the bare minimum, CellController should provide the size of the cell, and be responsible for configuring the cell based on ViewModel and ViewState. Note that during the lifecycle of a ListDiffDataSource, Cell may be reused just like UICollectionViewCell, but CellControllers are never reused, making it the perfect place to persist ViewState and other data.
+  CellController is expected to be the place for business logic. At the bare minimum, CellController should provide the size of the cell, and be responsible for configuring the cell based on ViewModel and ViewState. Note that during the lifecycle of a ListDiffDataSource, Cell may be reused just like UICollectionViewCell, but CellControllers are never reused, making it the perfect place to persist ViewState and other data.
 
 ### Uni-directional Dataflow
 
@@ -86,7 +86,7 @@ Both identity and equality are provided through ViewModel interface. Identical a
 
 - Currently ListDiffUI requires UICollectionView to use UICollectionViewFlowLayout (or its subclasses) as it relies on `collectionView(_:layout:sizeForItemAt:)` method of [UICollectionViewDelegateFlowLayout](https://developer.apple.com/documentation/uikit/uicollectionviewdelegateflowlayout) protocol to provide size of cells.
 
-- Although ListDiffUI's section notion provides a way to declare the structure of the list with potentially multiple sections or even nested sections, it gets mapped to a single UICollectionView section internally. As a result it does not support supplemental views for multiple sections.
+- Although ListDiffUI's section interface provides a way to declare the structure of the list with potentially multiple sections or even nested sections, it gets mapped to a single UICollectionView section internally. As a result it does not support supplemental views for multiple sections.
 
 - As ListDiffUI framework hides details of managing indexPaths explicitly, it is not as straightforward if one wants to use an indexPath related API on the UICollectionView. For example, `indexPath(for:)`, `cellForItem(at:)`, `scrollToItem(at:at:animated:)`.
 
@@ -157,20 +157,22 @@ Assuming we are building a ToDo list, to build it with ListDiffUI framework:
     let dataSource = ListDiffDataSource(collectionView: collectionView)
     ```
     
-3. Set root section on the ListDiffDataSource
+3. Observe data model updates, and set root section on the ListDiffDataSource
     ```
     dataSource.setRootSection(
       ListSection<
-        ToDoItemViewModel, ToDoItemCellController
-      >(items)
+        ToDoItem, ToDoItemCellController
+      >(items) {
+        ToDoItemViewModel(identifier: $0.id, description: $0.description)
+      }
     )
     ```
 
-And that's it, ListDiffUI framework will take care of building the root section into an array of view models and update UI accordingly.
+And that's it, ListDiffUI framework will take care of building the root section into an array of view models and updating UI accordingly.
 
 Refer to [the sample app](https://github.com/siyuyue/ListDiffUI/tree/main/Examples/SampleApp) for a slightly more complicated example, that also showcases a few additional features in the ListDiffUI framework, including:
 - Heterogeneous cells
-- Asynchronous diffing on background thread (This is one flag on ListDiffDataSource)
+- Asynchronous diffing on background thread (This is a configuration on ListDiffDataSource)
 - Passing in delegate objects to each controller to handle data mutation
 - Using context objects to pass in dependencies (e.g. a logger instance) to each controller
 
@@ -197,7 +199,7 @@ load(
 listdiffui_dependencies()
 ```
 
-In BUILD file, add `@ListDiffUI//:ListDiffUI` to your library'd deps.
+In BUILD file, add `@ListDiffUI//:ListDiffUI` to your library's deps.
 
 ### Copy source code over
 
@@ -215,13 +217,13 @@ If SwiftUI is an option that works for your case, there's no reason to go back t
 
 1. Loading the snapshot with identifiers using `appendSections` and `appendItems`
 
-Compared to ListDiffUI, this method of creating a snapshot does not provide a descriptive interface. The diffing process does not compute item updates either. User is responsible for computing updates to an existing item.
+   Compared to ListDiffUI, this method of creating a snapshot does not provide a descriptive interface. The diffing process does not compute item updates either. User is responsible for computing updates to an existing item.
 
 2. Populate snapshot with lightweight data structures
 
-Compared to ListDiffUI, this method does not track the identity of items.
+   Compared to ListDiffUI, this method does not track the identity of items.
 
-Neither of the methods provides something like ListDiffUI's Section concept that can easily support heterogeneity.
+Neither of the methods offers something like ListDiffUI's Section interface that can easily support heterogeneity.
 
 ### IGListKit
 
