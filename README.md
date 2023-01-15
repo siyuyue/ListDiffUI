@@ -13,7 +13,7 @@ ListDiffUI employs Model-View-ViewModel-Controller architechture for cells in th
 
 - Each type of cell is defined by a ViewModel:
 
-  ```
+  ```swift
   public protocol ListViewModel: Identifiable
   ```
 
@@ -21,21 +21,21 @@ ListDiffUI employs Model-View-ViewModel-Controller architechture for cells in th
 
   - A ViewState:
 
-  ```
+  ```swift
   public protocol ListViewState
   ```
 
   ViewStates in ListDiffUI framework are expected to be lightweight structs as well. ViewState should contain fields that affects the appearance of cells, but are not derived from data models. For example, a flag to represent whether a cell is in expanded or collapsed.
 
 - A Cell:
-  ```
+  ```swift
   open class ListCell: UICollectionViewCell
   ```
 
   Cell is a subclass of UICollectionViewCell with several additions and overrides to make it work with CellControllers in the framework.
 
 - A CellController:
-  ```
+  ```swift
   open class ListCellController<
     ListViewModelType: ListViewModel & Equatable,
     ListViewStateType: ListViewState,
@@ -59,7 +59,7 @@ ListDiffUI works well with any Reactive framework such as Combine or RxSwift, wh
 
 Describe the structure of the list, with sections:
 
-```
+```swift
 dataSource.setRootSection(
   CompositeSection(
     ListSection<
@@ -96,7 +96,7 @@ Assuming we are building a ToDo list, to build it with ListDiffUI framework:
 
 1. Build cell with MVVMC architecture
    - Start by defining the ViewModel and ViewState for a ToDo list cell:
-    ```
+    ```swift
     struct ToDoItemViewModel: ListViewModel, Equatable {
       var identifier: String
       var description: String
@@ -109,7 +109,7 @@ Assuming we are building a ToDo list, to build it with ListDiffUI framework:
     Note that here completed is on ViewState. If it is part of the data model (e.g., it is persisted across sessions), it should be moved to ViewModel instead.
 
    - Implement cell:
-    ```
+    ```swift
     final class ToDoItemCell: ListCell {
 
       var descriptionLabel: UILabel
@@ -121,7 +121,7 @@ Assuming we are building a ToDo list, to build it with ListDiffUI framework:
     This is usually the same as how one would do it with vanilla UICollectionViewCell.
 
    - Implement controller logic:
-    ```
+    ```swift
     final class ToDoItemCellController: ListCellController<
       ToDoItemViewModel,
       ToDoItemViewState,
@@ -153,12 +153,12 @@ Assuming we are building a ToDo list, to build it with ListDiffUI framework:
     Note that in didMount we are removing all targets on the button first to account for cell reuse. ListDiffUI framework does not dictate how cell communicates with controller to handle user actions. The above example is one way. One may also use delegate pattern, and set controller to be the delegate of the cell in didMount.
 
 2. Create ListDiffDataSource
-    ```
+    ```swift
     let dataSource = ListDiffDataSource(collectionView: collectionView)
     ```
     
 3. Observe data model updates, and set root section on the ListDiffDataSource
-    ```
+    ```swift
     dataSource.setRootSection(
       ListSection<
         ToDoItem, ToDoItemCellController
@@ -183,7 +183,7 @@ https://swiftpackageindex.com/siyuyue/ListDiffUI
 
 ### Via bazel
 In WORKSPACE file:
-```
+```starlark
 git_repository(
     name = "ListDiffUI",
     remote = "https://github.com/siyuyue/ListDiffUI.git",
