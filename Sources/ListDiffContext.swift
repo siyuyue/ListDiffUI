@@ -1,5 +1,14 @@
 import Foundation
 
+/// Used for passing in dependencies from ``ListDiffDataSource/init(collectionView:appleUpdatesAsync:contextObjects:)``
+/// and available on ``AnyListCellController/context`` property.
+///
+/// Objects are stored in a dictonary with `ObjectIdentifier(type(of: object))` as its key/
+/// Therefore you can not pass in multiple instances of the same class.
+///
+/// Main use case for context object is to make certain dependencies available in ``ListCellController``,
+/// and not having to pass them in with ViewModels.
+///
 public final class ListDiffContext {
 
   private let objects: [ObjectIdentifier: AnyObject]

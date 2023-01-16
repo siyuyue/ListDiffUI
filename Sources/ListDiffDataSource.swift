@@ -3,22 +3,19 @@ import UIKit
 
 private let cellAppearanceUpdateInterval: CFTimeInterval = 0.1
 
-/// ListDiffDataSource
+/// Data source object to provide data to UICollectionView.
 ///
-/// DataSource object to provide data to UICollectionView.
+/// To use ListDiffUI, create an instance of ListDiffDataSource with the corresponding UICollectionView.
+/// ListDiffDataSource will sets itself as both delegate and dataSource of the UICollectionView.
+/// Call ``ListDiffDataSource/setRootSection(_:animate:completion:)`` on the data source object to update the view model.
 ///
-/// UICollectionView's layout must be an instance of UICollectionFlowLayout (or its subclass), as it implements
-/// func collectionView(_: UICollectionView, layout: UICollectionViewLayout, sizeForItemAt: IndexPath)
-/// of UICollectionViewDelegateFlowLayout.
-///
-/// ListDiffDataSource sets itself as both delegate and dataSource of the UICollectionView. If you need to be the
-/// delegate of the UICollectionView as well, set your instance as the collectionViewDelegate of the
-/// ListDiffDataSource object instead.
-///
-/// appleUpdatesAsync: Set this to true on init to perform diffing and UI updates off main queue. Note that this will
-/// cause SectionComponent's build() calls to happen off main queue as well.
 public final class ListDiffDataSource: NSObject {
 
+  /// Forwards calls from the delegate of the UICollectionView.
+  ///
+  /// ListDiffDataSource instance will set itself as the delegate of the collection view.
+  /// If you need to be the delegate of the UICollectionView as well, set your instance as the collectionViewDelegate instead.
+  ///
   public weak var collectionViewDelegate: UICollectionViewDelegate?
 
   private let collectionView: UICollectionView
@@ -34,6 +31,15 @@ public final class ListDiffDataSource: NSObject {
   private var viewDataModels: [ListDiffDataModel] = []
   private var viewDataModelsOnQueue: [ListDiffDataModel] = []
 
+  /// Designated initializer of ListDiffDataSource.
+  ///
+  /// - Parameters:
+  ///   - collectionView: UICollectionView's layout must be an instance of UICollectionFlowLayout (or its subclass), as it implements
+  ///     `collectionView(_:layout:sizeForItemAt:)` of UICollectionViewDelegateFlowLayout.
+  ///   - appleUpdatesAsync: If true, diffing will be performed asynchronously on a background thread.
+  ///   - contextObjects: A list of objects passed in here will be available to use inside ``ListCellController``.
+  ///     This is a way to pass in dependencies (e.g. logger) so that you don't have to piggyback them on ViewModels.
+  ///
   public init(collectionView: UICollectionView, appleUpdatesAsync: Bool = false, contextObjects: AnyObject...) {
     precondition(collectionView.collectionViewLayout is UICollectionViewFlowLayout)
     self.collectionView = collectionView
@@ -45,6 +51,15 @@ public final class ListDiffDataSource: NSObject {
     collectionView.delegate = self
   }
 
+  /// Update view model with Section.
+  ///
+  /// ``Section`` provides a descriptive interface to describe the structure of the collection that supports heterogenity by design.
+  ///
+  /// - Parameters:
+  ///   - section: Root section that describes the entire collection.
+  ///   - animated: Whether diff update (insert/deletion/update) will be animated or not.
+  ///   - completion: Completion block that gets called after diff update.
+  ///
   public func setRootSection(_ section: Section?, animate: Bool = false, completion: (() -> Void)? = nil) {
     if appleUpdatesAsync {
       queue.async {
