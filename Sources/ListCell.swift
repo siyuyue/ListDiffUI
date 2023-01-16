@@ -15,7 +15,10 @@ open class ListCell: UICollectionViewCell {
     controller?.cellDidLayoutSubviews()
   }
 
-  /// It is a deliberate choice to disallow overriding `prepareForReuse()`
+  /// Disallow overriding `prepareForReuse()`.
+  ///
+  /// For cell reuse logic, it should be handled in ``ListCellController``'s life cycle methods,
+  /// e.g., ``ListCellController/didMount(onCell:)``, ``ListCellController/willUnmount(onCell:)``.
   public override func prepareForReuse() {
   }
 }

@@ -7,7 +7,7 @@ private let cellAppearanceUpdateInterval: CFTimeInterval = 0.1
 ///
 /// To use ListDiffUI, create an instance of ListDiffDataSource with the corresponding UICollectionView.
 /// ListDiffDataSource will sets itself as both delegate and dataSource of the UICollectionView.
-/// Call ``setRootSection(_:,animate:,completion:)`` on the data source object to update the view model.
+/// Call ``ListDiffDataSource/setRootSection(_:animate:completion:)`` on the data source object to update the view model.
 ///
 public final class ListDiffDataSource: NSObject {
 
@@ -35,7 +35,7 @@ public final class ListDiffDataSource: NSObject {
   ///
   /// - Parameters:
   ///   - collectionView: UICollectionView's layout must be an instance of UICollectionFlowLayout (or its subclass), as it implements
-  ///     `collectionView(_:,layout:,sizeForItemAt:) of UICollectionViewDelegateFlowLayout.
+  ///     `collectionView(_:layout:sizeForItemAt:)` of UICollectionViewDelegateFlowLayout.
   ///   - appleUpdatesAsync: If true, diffing will be performed asynchronously on a background thread.
   ///   - contextObjects: A list of objects passed in here will be available to use inside ``ListCellController``.
   ///     This is a way to pass in dependencies (e.g. logger) so that you don't have to piggyback them on ViewModels.
