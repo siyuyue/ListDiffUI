@@ -22,10 +22,6 @@ final class ButtonCell: ListCell {
     button.backgroundColor = .blue
     return button
   }()
-
-  func configure(viewModel: ButtonViewModel, viewState: ListViewStateNone) {
-    button.setTitle(viewModel.title, for: .normal)
-  }
 }
 
 final class ButtonCellController: ListCellController<
