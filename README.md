@@ -156,7 +156,7 @@ Assuming we are building a ToDo list, to build it with ListDiffUI framework:
     ```swift
     let dataSource = ListDiffDataSource(collectionView: collectionView)
     ```
-    
+
 3. Observe data model updates, and set root section on the ListDiffDataSource
     ```swift
     dataSource.setRootSection(
@@ -170,7 +170,7 @@ Assuming we are building a ToDo list, to build it with ListDiffUI framework:
 
 And that's it, ListDiffUI framework will take care of building the root section into an array of view models and updating UI accordingly.
 
-Refer to [the sample app](https://github.com/siyuyue/ListDiffUI/tree/main/Examples/SampleApp) for a slightly more complicated example, that also showcases a few additional features in the ListDiffUI framework, including:
+Refer to [the sample apps](https://github.com/siyuyue/ListDiffUI/tree/main/Examples) for some examples, that showcases a few additional features in the ListDiffUI framework, including:
 - Heterogeneous cells
 - Asynchronous diffing on background thread (This is a configuration on ListDiffDataSource)
 - Passing in delegate objects to each controller to handle data mutation
