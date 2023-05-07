@@ -212,7 +212,7 @@ open class AnyListCellController {
     fatalError("Must be provided by subclass")
   }
 
-  /// Used for accessing context objects passed in from ``ListDiffDataSource/init(collectionView:appleUpdatesAsync:contextObjects:)``.
+  /// Used for accessing context objects passed in from ``ListDiffDataSource/init(collectionView:applyUpdatesAsync:contextObjects:)``.
   public let context: ListDiffContext
 
   weak var cell: ListCell? {

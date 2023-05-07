@@ -21,7 +21,7 @@ public final class ListDiffDataSource: NSObject {
   private let collectionView: UICollectionView
   private let context: ListDiffContext
   private let queue: DispatchQueue
-  private let appleUpdatesAsync: Bool
+  private let applyUpdatesAsync: Bool
 
   private var appearedCellIdentifiers = Set<String>()
   private var fullyAppearedCellIdentifiers = Set<String>()
@@ -36,16 +36,16 @@ public final class ListDiffDataSource: NSObject {
   /// - Parameters:
   ///   - collectionView: UICollectionView's layout must be an instance of UICollectionFlowLayout (or its subclass), as it implements
   ///     `collectionView(_:layout:sizeForItemAt:)` of UICollectionViewDelegateFlowLayout.
-  ///   - appleUpdatesAsync: If true, diffing will be performed asynchronously on a background thread.
+  ///   - applyUpdatesAsync: If true, diffing will be performed asynchronously on a background thread.
   ///   - contextObjects: A list of objects passed in here will be available to use inside ``ListCellController``.
   ///     This is a way to pass in dependencies (e.g. logger) so that you don't have to piggyback them on ViewModels.
   ///
-  public init(collectionView: UICollectionView, appleUpdatesAsync: Bool = false, contextObjects: AnyObject...) {
+  public init(collectionView: UICollectionView, applyUpdatesAsync: Bool = false, contextObjects: AnyObject...) {
     precondition(collectionView.collectionViewLayout is UICollectionViewFlowLayout)
     self.collectionView = collectionView
-    self.appleUpdatesAsync = appleUpdatesAsync
+    self.applyUpdatesAsync = applyUpdatesAsync
     self.context = ListDiffContext(objects: contextObjects)
-    queue = appleUpdatesAsync ? DispatchQueue(label: "ListDiffui.ListDiffdatasource", qos: .default) : .main
+    queue = applyUpdatesAsync ? DispatchQueue(label: "ListDiffui.ListDiffdatasource", qos: .default) : .main
     super.init()
     collectionView.dataSource = self
     collectionView.delegate = self
@@ -61,7 +61,7 @@ public final class ListDiffDataSource: NSObject {
   ///   - completion: Completion block that gets called after diff update.
   ///
   public func setRootSection(_ section: Section?, animate: Bool = false, completion: (() -> Void)? = nil) {
-    if appleUpdatesAsync {
+    if applyUpdatesAsync {
       queue.async {
         let diff = self.computeDiff(section: section)
         DispatchQueue.main.async {

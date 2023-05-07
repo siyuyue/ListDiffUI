@@ -1,6 +1,6 @@
 import Foundation
 
-/// Used for passing in dependencies from ``ListDiffDataSource/init(collectionView:appleUpdatesAsync:contextObjects:)``
+/// Used for passing in dependencies from ``ListDiffDataSource/init(collectionView:applyUpdatesAsync:contextObjects:)``
 /// and available on ``AnyListCellController/context`` property.
 ///
 /// Objects are stored in a dictonary with `ObjectIdentifier(type(of: object))` as its key/

@@ -12,7 +12,7 @@ final class ViewController: UIViewController {
 
   private lazy var dataSource: ListDiffDataSource = {
     let dataSource = ListDiffDataSource(
-      collectionView: collectionView, appleUpdatesAsync: true, contextObjects: logger)
+      collectionView: collectionView, applyUpdatesAsync: true, contextObjects: logger)
     return dataSource
   }()
 
