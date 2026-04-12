@@ -1,7 +1,7 @@
-load("@build_bazel_rules_apple//apple:ios.bzl", "ios_application")
-load("@build_bazel_rules_swift//swift:swift.bzl", "swift_library")
+load("@rules_apple//apple:ios.bzl", "ios_application")
+load("@rules_swift//swift:swift.bzl", "swift_library")
 load(
-    "@com_github_buildbuddy_io_rules_xcodeproj//xcodeproj:defs.bzl",
+    "@rules_xcodeproj//xcodeproj:defs.bzl",
     "top_level_target",
     "xcodeproj",
 )
@@ -32,12 +32,12 @@ ios_application(
     deps = [
         ":SampleAppLib",
     ],
+    visibility = ["//visibility:public"],
 )
 
 xcodeproj(
     name = "SampleAppProject",
     project_name = "SampleApp",
-    build_mode = "bazel",
     top_level_targets = [
         top_level_target(":SampleApp", target_environments = ["simulator"]),
     ],
@@ -69,12 +69,12 @@ ios_application(
     deps = [
         ":SampleAppLib2",
     ],
+    visibility = ["//visibility:public"],
 )
 
 xcodeproj(
     name = "SampleAppProject2",
     project_name = "SampleApp2",
-    build_mode = "bazel",
     top_level_targets = [
         top_level_target(":SampleApp2", target_environments = ["simulator"]),
     ],

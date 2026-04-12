@@ -1,4 +1,4 @@
-load("@build_bazel_rules_swift//swift:swift.bzl", "swift_library")
+load("@rules_swift//swift:swift.bzl", "swift_library")
 
 swift_library(
     name = "ListDiffUI",
@@ -6,7 +6,7 @@ swift_library(
         "Sources/**/*.swift",
     ]),
     deps = [
-        "@ListDiff//:ListDiff",
+        "@list_diff//:ListDiff",
     ],
     visibility = ["//visibility:public"],
 )
