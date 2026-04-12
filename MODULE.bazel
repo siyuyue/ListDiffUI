@@ -1,3 +1,10 @@
+module(
+    name = "list_diff_ui",
+    version = "0.1.2",
+    bazel_compatibility = [">=8.0.0"],
+    repo_name = "ListDiffUI",
+)
+
 bazel_dep(name = "rules_xcodeproj", version = "4.0.1")
 bazel_dep(name = "rules_apple", version = "4.4.0")
 bazel_dep(name = "rules_swift", version = "3.5.0")
