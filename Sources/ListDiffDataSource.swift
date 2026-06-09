@@ -127,8 +127,9 @@ public final class ListDiffDataSource: NSObject {
     } else {
       batchUpdates()
     }
-    identifiersToDelete.forEach { cellControllers[$0] = nil }
+    // Update appearance before discarding their controllers, so cleanup callbacks can still run.
     updateCellAppearance()
+    identifiersToDelete.forEach { cellControllers[$0] = nil }
   }
 
   private func cellController(_ viewDataModel: ListDiffDataModel)
